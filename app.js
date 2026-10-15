@@ -4,7 +4,7 @@ const saved=()=>localStorage.setItem('schedule-viewer-state',JSON.stringify(stat
 const dateList=()=>Array.from({length:7},(_,i)=>{let d=new Date();d.setDate(d.getDate()+i);return d});
 function renderControls(){document.querySelectorAll('[data-area]').forEach(b=>{b.classList.toggle('active',b.dataset.area===state.area);b.onclick=()=>{state.area=b.dataset.area;saved();renderControls();renderResult()}});let ds=dateList();$('#dates').innerHTML=ds.map((d,i)=>`<button data-date="${i}" class="${state.date===i?'active':''}">${i===0?'今日':d.toLocaleDateString('ja-JP',{month:'numeric',day:'numeric',weekday:'short'})}</button>`).join('');document.querySelectorAll('[data-date]').forEach(b=>b.onclick=()=>{state.date=+b.dataset.date;saved();renderControls();if(state.mode==='schedule')loadSchedule(false)});$('#prev').onclick=()=>changeDate(-1);$('#next').onclick=()=>changeDate(1)}
 function changeDate(delta){state.date=Math.max(0,Math.min(6,state.date+delta));saved();renderControls();if(state.mode==='schedule')loadSchedule(false)}
-function proxyUrl(url){return 'https://api.allorigins.win/raw?url='+encodeURIComponent(url)}
+function proxyUrl(url){return 'https://schedule-viewer-proxy.sushicyborg.workers.dev/?url='+encodeURIComponent(url)}
 async function getHtml(url){let r=await fetch(proxyUrl(url));if(!r.ok)throw Error('通信に失敗しました（'+r.status+'）');return await r.text()}
 function parse(html){return new DOMParser().parseFromString(html,'text/html')}
 function clean(s){return(s||'').replace(/\s+/g,' ').trim()}
